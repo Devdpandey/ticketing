@@ -11,7 +11,7 @@
 						<p>Duration: <?php echo $movie_detail['m_duration'];?><br>
 						Description: <?php echo $movie_detail['m_short_description'];?></p>
 						<?php foreach($slots as $slot): ?>
-							<a class="btn btn-success rounded-pill" href="<?php echo site_url().'movie/book/'.$slot['id']; ?>"><?php echo $slot['s_time'];?></a>
+							<a class="btn btn-success rounded-pill" href="<?php echo site_url().'movie/book/'.$this->uri->segment(3).'/'.$slot['id']; ?>"><?php echo $slot['s_time'];?></a>
 						<?php endforeach; ?>
 					</div>
 					<div class="col-md-6"  style="text-align:right">

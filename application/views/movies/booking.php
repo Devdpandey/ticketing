@@ -1,9 +1,8 @@
 
 <?php $this->load->view('includes/header'); ?>
 <a class="btn btn-primary" style="margin-bottom:10px;" href="<?php echo site_url().'movie';?>">Back to list</a>
-<h4 style="text-align:center">Choose seats</h4>
-<div class="countdownmsg" style="color:red"></div><br>
-<div class="countdown" style="color:red"></div>
+<h5 style="text-align:center">Choose seats for <?php echo $slot['s_title']; ?></h5>
+<h6><?php echo $slot['s_date'].' '.$slot['s_time']; ?></h6>
     <ul class="showcase">
         <li>
             <div class="seat"></div>
@@ -88,8 +87,9 @@
 	<br>
     <p class="text">You have selected <span id="seatsSelected">0</span> seats for the price of Rs <span id="totalPrice">0</span></p>
 	<a id ="confirm_booking" style="display:none" class="btn btn-success" style="margin-bottom:10px;" href="#">Confirm Booking</a>
-	<form method ="POST" id="seat_details_form" action ="<?php echo site_url('movie/payment/'.$id) ?>">
+	<form method ="POST" id="seat_details_form" action ="<?php echo site_url('movie/payment/') ?>">
 	<input type ="hidden" name="slot_id" value="<?php echo $id;?>">
+	<input type ="hidden" name="movie_id" value="<?php echo $movie_id;?>">
 	<div id="booked_seats"></div>
 	</form>
 <style>
@@ -228,27 +228,12 @@ body {
 			updatePrice();
 			var selectedSeats = $('.selected').length;
 			console.log(selectedSeats);
-			// show timer 
-			if ($('.countdown').is(':empty') && selectedSeats>1){
+			if (selectedSeats>1){
 				$('#confirm_booking').show();
-				$(".countdownmsg").html("You have only 5 minute(s) to complete your booking! ");
-				$(".countdown").timer({
-                duration: '300s',
-                format: '%H:%M:%S',
-                callback: function () {
-                    alert("Your booking time has ended!");
-					location.reload();
-                }
-            });
 			}
 			if(selectedSeats<2){
 				$('#confirm_booking').hide();
-				$(".countdown").timer('remove');
-				$(".countdown").empty();
-				$(".countdownmsg").empty();
 			}
-			 
-			// show timer ends here 
 
 			};
 
@@ -269,17 +254,39 @@ body {
             }
 
 			$('#confirm_booking').on("click", function(e) {
-               // seats  need to be checked here if available or not
-
-			   $('.selected').each(function(){
-				   var seat_id = $(this).attr('id');
+				var booking_check_status = 'success';
+				var selectedSeats = $('.selected').length;
+				var ids = $('.selected').map(function() {
+					if($(this).attr('id')){
+						return $(this).attr('id');
+					}
+				
+				});
+				
+				   var seat_id = ids.toArray();
 				   if(seat_id){
-					$('#booked_seats').append('<input type="hidden" name="seats[]" value="'+seat_id+'" >');
-					console.log('appended '+seat_id);
+					$.ajax({
+					url: '/check-bookings',
+					type: 'POST',
+					data: {slot_id: "<?php echo $id;?>", seat: seat_id},
+					error: function(response) {
+						alert('some error occured while processing your request ! please try again later')
+					},
+					success: function(response) {
+						if(response.status==false){
+							toastr.error(response.message, 'Booking Failed!', {timeOut: 7000});
+							booking_check_status = 'failed';
+						} 
+					}
+					});
+					$('#booked_seats').append('<input type="hidden" name="seats" value="'+seat_id+'" >');
 				   }
- 				});
-
-				 $("#seat_details_form").submit();
+ 				
+				   $(document).ajaxStop(function() {
+                    if(booking_check_status=='success'){
+					$("#seat_details_form").submit();
+				 	}
+               		 });	 
                
             });
 		});

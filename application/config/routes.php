@@ -55,3 +55,5 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['movie/slots/:id'] = 'movie/slots';
 $route['movie/book/:id'] = 'movie/slot';
+$route['check-bookings']['post'] = 'Movie/check_bookings';
+$route['complete-bookings']['post'] = 'Movie/complete_bookings';
