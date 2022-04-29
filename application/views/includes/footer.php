@@ -1,5 +1,4 @@
 </body>
-
 <script>
 	<?php if($this->session->flashdata('success')): ?>
 		toastr.success("<?php echo $this->session->flashdata('success'); ?>");
@@ -84,6 +83,6 @@
 			});
 		});
 	})
-
+	
 </script>
 </html>
