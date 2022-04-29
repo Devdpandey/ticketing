@@ -88,7 +88,10 @@
 	<br>
     <p class="text">You have selected <span id="seatsSelected">0</span> seats for the price of Rs <span id="totalPrice">0</span></p>
 	<a id ="confirm_booking" style="display:none" class="btn btn-success" style="margin-bottom:10px;" href="#">Confirm Booking</a>
-	
+	<form method ="POST" id="seat_details_form" action ="<?php echo site_url('movie/payment/'.$id) ?>">
+	<input type ="hidden" name="slot_id" value="<?php echo $id;?>">
+	<div id="booked_seats"></div>
+	</form>
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
@@ -264,6 +267,21 @@ body {
                    $('#'+bookeddetails[i]['b_seat_id']).addClass('occupied');
 				   console.log('the id is'+bookeddetails[i]['b_seat_id']);
             }
+
+			$('#confirm_booking').on("click", function(e) {
+               // seats  need to be checked here if available or not
+
+			   $('.selected').each(function(){
+				   var seat_id = $(this).attr('id');
+				   if(seat_id){
+					$('#booked_seats').append('<input type="hidden" name="seats[]" value="'+seat_id+'" >');
+					console.log('appended '+seat_id);
+				   }
+ 				});
+
+				 $("#seat_details_form").submit();
+               
+            });
 		});
 </script>
 <?php $this->load->view('includes/footer'); ?>

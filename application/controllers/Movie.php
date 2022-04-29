@@ -40,9 +40,25 @@ class Movie extends CI_Controller
         }
 		$data                 = [];
 		$data['title']        = 'Book seats';
+		$data['id']        	  = $id;
 		$data['slot']         = $this->Slot_model->slot(array('id' => $id));
 		$data['bookings']     = json_encode($this->Booking_model->bookings(array('slot_id' => $id)));
 		$this->load->view('movies/booking', $data);
+	}
+
+	public function payment($id)
+	{
+		if(!$this->input->post())
+        {
+            redirect(site_url('movie/book/'.$id));
+        }   
+		
+		$data                 = [];
+		$data['seats']   	  = $this->input->post('seats');
+		$data['title']        = 'Book seats';
+		$data['slot']         = $this->Slot_model->slot(array('id' => $id));
+		$data['bookings']     = json_encode($this->Booking_model->bookings(array('slot_id' => $id)));
+		$this->load->view('movies/payment', $data);
 	}
 
 }
