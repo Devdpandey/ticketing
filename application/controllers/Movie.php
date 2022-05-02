@@ -102,7 +102,7 @@ class Movie extends CI_Controller
 				$booked_date = strtotime($booking_result['b_booked_date']);
 				$now = strtotime(date('y-m-d h:i:s'));
 				$interval = $now-$booked_date;
-				if($interval > 60){
+				if($interval > 60 && $booking_result['b_status']=='in_progress'){
 					$response = $this->Booking_model->delete(array('id' => $booking_result['id']));
 				}
 				else
