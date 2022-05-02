@@ -23,7 +23,7 @@ date_default_timezone_set('Asia/Kathmandu');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://ciproject.test';
+$config['base_url'] = 'http://ticketing.local';
 
 /*
 |--------------------------------------------------------------------------

@@ -1,5 +1,8 @@
 
 <?php $this->load->view('includes/header'); ?>
+
+
+<div class="container">
 <a class="btn btn-primary" style="margin-bottom:10px;" href="<?php echo site_url().'movie';?>">Back to list</a>
 <h5 style="text-align:center">Choose seats for <?php echo $slot['s_title']; ?></h5>
 <h6><?php echo $slot['s_date'].' '.$slot['s_time']; ?></h6>
@@ -18,8 +21,6 @@
         </li>
 
     </ul>
-
-<div class="container">
 	<div class="screen">SCREEN</div>
 	<div class="seatrow">
 			<div class="row">
@@ -152,8 +153,8 @@ body {
 }
 
 .seat {
-	height: 18px;
-	width: 18px;
+	height: 45px;
+	width: 45px;
 	background-color: #777;
 	display: inline-block;
 	border-top-left-radius: 8px;
@@ -169,14 +170,14 @@ body {
 }
 
 .container {
-	width: 284px;
+	width: 600px;
 	perspective: 1000px;
 	text-align:center;
 }
 
 .container .screen {
 	width: 100%;
-	height: 40px;
+	height: 50px;
 	background-color: #cb7226;
 	-webkit-box-shadow: 0px 0px 7px 0px rgba(255, 255, 255, 1);
 	-moz-box-shadow: 0px 0px 7px 0px rgba(255, 255, 255, 1);
@@ -193,7 +194,8 @@ body {
 }
 
 .container .seat {
-	margin-left: 2px;
+	margin-left: 5px;
+	margin-bottom: 5px;
 }
 
 .container .seat:not(.occupied):hover {
