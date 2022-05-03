@@ -1,7 +1,7 @@
 
 <?php $this->load->view('includes/header'); ?>
 <div class="container">
-	<h4 style="text-align:center">Available slots for <?php echo $movie_detail['m_title'] ?></h4><a class="btn btn-primary" style="margin-bottom:10px;" href="<?php echo site_url().'movie';?>">Back to list</a>
+	<h2 style="text-align:center;margin-top: 5%;">Available slots for <?php echo $movie_detail['m_title'] ?></h2><a class="btn btn-primary" style="margin-bottom:10px;" href="<?php echo site_url().'movie';?>">Back to list</a>
 	<div id="body">
 		<fieldset>
 			<legend style="display: block; padding-left: 2px; padding-right: 2px; border: none;">Available slots for "<?php echo $movie_detail['m_title'] ?>":</legend>

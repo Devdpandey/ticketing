@@ -1,7 +1,7 @@
 
 <?php $this->load->view('includes/header'); ?>
 <div class="container">
-	<h4 style="text-align:center">Now showing!</h4>
+	<h2 style="text-align:center; margin-top: 5%;">Now showing!</h2>
 	<div id="body">
 		<div class="row col-md-12">
 			<?php foreach($movies as $movie): ?>

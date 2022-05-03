@@ -21,7 +21,7 @@
         </li>
 
     </ul>
-	<div class="screen">SCREEN</div>
+	<div class="screen"><h3>SCREEN</h3></div>
 	<div class="seatrow">
 			<div class="row">
 				<div id="seat_1" class="seat"></div>
@@ -118,12 +118,12 @@
 }
 
 body {
-	background-color: #a8afb5;
+	background-color: #e5e7e9;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 100vh;
+	height: 75vh;
 	color: #000;
 	margin: 0;
 }
@@ -145,7 +145,11 @@ body {
 	text-align:center
 }
 .showcase li {
-	margin: 0 10px;
+	margin: 0 32px;
+    align-items: center;
+    display: flex;
+    gap: 5px;
+    font-size: 18px;
 }
 
 .showcase li small {
@@ -180,7 +184,7 @@ body {
 
 .container .screen {
 	width: 100%;
-	height: 50px;
+	/* height: 50px; */
 	background-color: #cb7226;
 	-webkit-box-shadow: 0px 0px 7px 0px rgba(255, 255, 255, 1);
 	-moz-box-shadow: 0px 0px 7px 0px rgba(255, 255, 255, 1);
