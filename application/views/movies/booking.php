@@ -12,7 +12,7 @@
             <small>Available</small>
         </li>
         <li>
-            <div class="seat selected"></div>
+            <div class="seat selectedindex"></div>
             <small>Selected</small>
         </li>
         <li>
@@ -164,6 +164,9 @@ body {
 .seat.selected {
 	background-color: rgb(36 124 43);
 }
+.seat.selectedindex {
+	background-color: rgb(36 124 43);
+}
 
 .seat.occupied {
 	background-color: #d70d0d;
@@ -230,10 +233,10 @@ body {
 		updatePrice();
 		var selectedSeats = $('.selected').length;
 		console.log(selectedSeats);
-		if (selectedSeats>1){
+		if (selectedSeats>0){
 			$('#confirm_booking').show();
 		}
-		if(selectedSeats<2){
+		if(selectedSeats<1){
 			$('#confirm_booking').hide();
 		}
 		};
