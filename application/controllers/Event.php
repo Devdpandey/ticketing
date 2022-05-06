@@ -1,43 +1,43 @@
 <?php
 
-class Event extends CI_Controller 
+class Event extends CI_Controller
 {
-	public function __construct() 
-	{
-		parent::__construct(); 
+    public function __construct()
+    {
+        parent::__construct();
 
-		$this->load->library(array("session","form_validation"));
-        $this->load->helper(array('html','form'));
-		$this->load->model('Event_model');
-	}
+        $this->load->library(array("session", "form_validation"));
+        $this->load->helper(array('html', 'form'));
+        $this->load->model('Event_model');
+    }
 
-	public function index()
-	{
-		$data           = [];
-		$data['title']  = 'All Events Available';
-		$data['events'] = $this->Event_model->events();
-		$this->load->view('events/index', $data);
-	}
+    public function index()
+    {
+        $data           = [];
+        $data['title']  = 'All Events Available';
+        $data['events'] = $this->Event_model->events();
+        $this->load->view('events/index', $data);
+    }
 
-	public function form($id = 0)
+    public function form($id = 0)
     {
         $data                           = array();
         $data['title']                  = "Event Form";
-        //event data statrt here
+        //event data start here
         $data['e_event_name']           = $this->input->post('e_event_name');
         $data['e_event_description']    = $this->input->post('e_event_description');
         $data['e_event_date']           = $this->input->post('e_event_date');
         $data['e_event_time']           = $this->input->post('e_event_time');
         $data['id']                     = $id;
 
-        if( $id > 0 )
+        if ($id > 0) 
         {
             $param                  = array();
             $param['id']            = $id;
             $event                  = $this->Event_model->event($param);
-            if(empty($event))
-            {
-                redirect(site_url('event'));exit;
+            if (empty($event)) {
+                redirect(site_url('event'));
+                exit;
             }
             $data['e_event_name']           = $event['e_event_name'];
             $data['e_event_description']    = $event['e_event_description'];
@@ -46,13 +46,13 @@ class Event extends CI_Controller
             $data['id']                     = $event['id'];
         }
 
-        $this->form_validation->set_rules('e_event_name', 'Event Name', 'required|callback_event_name['.$id.']');
+        $this->form_validation->set_rules('e_event_name', 'Event Name', 'required|callback_event_name[' . $id . ']');
         $this->form_validation->set_rules('e_event_date', 'Event Date', 'required');
-        
-        if ($this->form_validation->run() === FALSE)
-        {  
-            $this->load->view('events/form',$data);
-        }
+
+        if ($this->form_validation->run() === FALSE) 
+        {
+            $this->load->view('events/form', $data);
+        } 
         else 
         {
             $save                           = array();
@@ -61,11 +61,12 @@ class Event extends CI_Controller
             $save['e_event_description']    = $this->input->post('e_event_description');
             $save['e_event_date']           = $this->input->post('e_event_date');
             $save['e_event_time']           = $this->input->post('e_event_time');
-            $save['id']             		= $this->Event_model->save($save);
+            $save['id']                     = $this->Event_model->save($save);
             $this->session->set_flashdata('success', 'Data Updated successfully !');
+
             redirect(site_url());
         }
-    }	
+    }
 
     public function delete($id)
     {
@@ -74,28 +75,32 @@ class Event extends CI_Controller
         $response = $this->Event_model->delete($param);
         $status = false;
         $message = 'Could not delete event!';
-        if($response>0)
+
+        if ($response > 0) 
         {
             $status = true;
             $message = 'Event deleted successfully';
         }
+        
         return $this->output
             ->set_content_type('application/json')
             ->set_status_header(200)
             ->set_output(json_encode(array(
-                    'status' => $status,
-                    'message' => $message
+                'status' => $status,
+                'message' => $message
             )));
     }
 
     public function event_name($name, $id)
     {
-        $event = $this->Event_model->events(array('exclude_ids' => array($id),'name' => $name));
-        if(!empty($event))
+        $event = $this->Event_model->events(array('exclude_ids' => array($id), 'name' => $name));
+
+        if (!empty($event)) 
         {
-            $this->form_validation->set_message('event_name', 'The '.$name.' is already taken!');   
+            $this->form_validation->set_message('event_name', 'The ' . $name . ' is already taken!');
             return false;
         }
+
         return true;
     }
 }
