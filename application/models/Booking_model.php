@@ -9,7 +9,7 @@ class Booking_model extends CI_Model
         {
             $this->db->where('b_slot_id', $slot_id);
         }
-        $query = $this->db->where('b_status', 'sold')->get("bookings");
+        $query = $this->db->where_in('b_status', array('sold','reserved'))->get("bookings");
         return $query->result_array();
     }
 

@@ -179,6 +179,9 @@
 	.seat.occupied {
 		background-color: #d70d0d;
 	}
+	.seat.reserved {
+		background-color: #a7901f;
+	}
 
 	.container {
 		width: 600px;
@@ -209,7 +212,7 @@
 		margin-bottom: 5px;
 	}
 
-	.container .seat:not(.occupied):hover {
+	.container .seat:not(.occupied, .reserved):hover {
 		transform: scale(1.2);
 		cursor: pointer;
 	}
@@ -227,7 +230,7 @@
 
 		const updatePrice = () => {
 			const selectedSeats = document.querySelectorAll(
-				'.container .seat.selected:not(.occupied)'
+				'.container .seat.selected:not(.occupied, .reserved)'
 			);
 			const selectedSeatsCount = selectedSeats.length;
 
@@ -252,7 +255,8 @@
 			e.preventDefault();
 			if (
 				e.target.classList.contains('seat') &&
-				!e.target.classList.contains('occupied')
+				!e.target.classList.contains('occupied') &&
+				!e.target.classList.contains('reserved')
 			) {
 				selectSeat(e.target);
 			}
@@ -260,7 +264,13 @@
 
 		var bookeddetails = JSON.parse('<?php echo $bookings; ?>');
 		for (var i = 0; i < bookeddetails.length; i++) {
-			$('#' + bookeddetails[i]['b_seat_id']).addClass('occupied');
+			if(bookeddetails[i]['b_status']=='sold'){
+				$('#' + bookeddetails[i]['b_seat_id']).addClass('occupied');
+			}
+			else {
+				$('#' + bookeddetails[i]['b_seat_id']).addClass('reserved');
+			}
+			
 			console.log('the id is' + bookeddetails[i]['b_seat_id']);
 		}
 
