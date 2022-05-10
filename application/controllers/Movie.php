@@ -110,32 +110,42 @@ class Movie extends CI_Controller
 
 	public function check_bookings()
 	{
-		$seat_ids = $this->input->post('seat');
-		$slot_id = $this->input->post('slot_id');
-		$status  = true;
-		$message  = 'Booking currently not available for ';
-
+		$seat_ids 	   = $this->input->post('seat');
+		$slot_id 	   = $this->input->post('slot_id');
+		$status  	   = true;
+		$message  	   = 'Booking currently not available for ';
+		$slot_seat_ids = array();
 		foreach ($seat_ids as $id) 
 		{
-			$booking_result = $this->Booking_model->check_bookings(array('seat_id' => $id, 'slot_id' => $slot_id));
-			if (count($booking_result) > 0) 
+			array_push($slot_seat_ids, $slot_id.'_'.$id);
+		}
+		$booking_result = $this->Booking_model->check_bookings($slot_seat_ids);
+		if(count($booking_result) > 0)
+		{
+			$bookings_to_delete = array();
+			foreach($booking_result as $result)
 			{
 				//check if it is expired and delete if expired
-				$booked_date = strtotime($booking_result['b_booked_date']);
+				$booked_date = strtotime($result['b_booked_date']);
 				$now = strtotime(date('y-m-d h:i:s'));
 				$interval = $now - $booked_date;
 
-				if ($interval > 60 && $booking_result['b_status'] == 'in_progress') 
+				if ($interval > 60 && $result['b_status'] == 'in_progress') 
 				{
-					$response = $this->Booking_model->delete(array('id' => $booking_result['id']));
+					array_push($bookings_to_delete, $result['id']);
 				} 
 				else 
 				{
 					$status = false;
-					$message .= $id . ' ';
+					$message .= $result['b_seat_id'] . ' ';
 				}
 			}
+			if(count($bookings_to_delete) > 0)
+			{
+				$response = $this->Booking_model->delete($bookings_to_delete);
+			}
 		}
+	
 		$message .= '. please try again later !';
 
 		return $this->output

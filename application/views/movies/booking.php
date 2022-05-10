@@ -295,7 +295,6 @@
 				});
 				$('#booked_seats').append('<input type="hidden" name="seats" value="' + seat_id + '" >');
 			}
-
 			$(document).ajaxStop(function() {
 				if (booking_check_status == 'success') {
 					$("#seat_details_form").submit();

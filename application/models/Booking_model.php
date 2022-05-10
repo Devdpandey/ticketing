@@ -13,22 +13,12 @@ class Booking_model extends CI_Model
         return $query->result_array();
     }
 
-    public function check_bookings($param)
+    public function check_bookings($param = array())
     {
-        $slot_id = isset($param['slot_id']) ? $param['slot_id'] : null;
-        $seat_id = isset($param['seat_id']) ? $param['seat_id'] : null;
-
-        if ($slot_id != null) 
-        {
-            $this->db->where('b_slot_id', $slot_id);
-        }
-        if ($seat_id != null) 
-        {
-            $this->db->where('b_seat_id', $seat_id);
-        }
+        $this->db->where_in('b_slot_seat_id', $param);
         $query = $this->db->get("bookings");
 
-        return $query->row_array();
+        return $query->result_array();
     }
 
     public function save($data = array())
