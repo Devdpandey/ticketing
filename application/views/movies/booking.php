@@ -18,6 +18,10 @@
 			<div class="seat occupied"></div>
 			<small>Booked</small>
 		</li>
+		<li>
+			<div class="seat reserved"></div>
+			<small>Reserved</small>
+		</li>
 
 	</ul>
 	<div class="screen">
