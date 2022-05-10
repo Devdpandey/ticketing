@@ -33,22 +33,20 @@ class Booking_model extends CI_Model
 
     public function save($data = array())
     {
-        if (isset($data['id']) && $data['id'] > 0) 
-        {
-            $this->db->where('id', $data['id']);
-            $this->db->update('bookings', $data);
-            return $data['id'];
-        } 
-        else 
-        {
-            $this->db->insert('bookings', $data);
-            return $this->db->insert_id();
-        }
+        $this->db->insert_batch('bookings', $data);
+        return $this->db->insert_id();
     }
 
-    public function delete($param)
+    public function update($data = array())
     {
-        $this->db->delete('bookings', array('id' => $param['id']));
+        $this->db->update_batch('bookings', $data, 'id');
+        return $this->db->insert_id();
+    }
+
+    public function delete($data = array())
+    {   
+        $this->db->where_in('id', $data);
+        $this->db->delete('bookings');
         return $this->db->affected_rows();
     }
 }

@@ -30,7 +30,11 @@ class Movie extends CI_Controller
 		$data['title']        = 'Available slots';
 		$data['slots']        = $this->Slot_model->slots(array('movie_id' => $id));
 		$data['movie_detail'] = $this->Movie_model->movie(array('id' => $id));
-
+		if(empty($data['slots']) || empty($data['movie_detail']))
+		{
+			$this->session->set_flashdata('error', 'Movie or shows not found !');
+			redirect(site_url('movie'));
+		}
 		$this->load->view('movies/slots', $data);
 	}
 
@@ -38,7 +42,8 @@ class Movie extends CI_Controller
 	{
 		if ($id == null || $movie_id == null) 
 		{
-			exit('No slot found!');
+			$this->session->set_flashdata('error', 'Shows not found !');
+			redirect(site_url('movie'));
 		}
 
 		$data                 = [];
@@ -47,9 +52,10 @@ class Movie extends CI_Controller
 		$data['movie_id']     = $movie_id;
 		$data['slot']         = $this->Slot_model->slot(array('id' => $id));
 
-		if (!$data['slot']) 
+		if (empty($data['slot'])) 
 		{
-			exit('No slot found!');
+			$this->session->set_flashdata('error', 'Shows not found !');
+			redirect(site_url('movie'));
 		}
 
 		$data['bookings']     = json_encode($this->Booking_model->bookings(array('slot_id' => $id)));
@@ -58,7 +64,7 @@ class Movie extends CI_Controller
 
 	public function payment()
 	{
-		if (!$this->input->post()) 
+		if (empty($this->input->post())) 
 		{
 			redirect(site_url('movie'));
 		}
@@ -67,28 +73,35 @@ class Movie extends CI_Controller
 		$data['seats']   	  = explode(',', $this->input->post('seats'));
 		$movie_detail   	  = $this->Movie_model->movie(array('id' => $this->input->post('movie_id')));
 		$slot_detail   	 	  = $this->Slot_model->slot(array('id' => $this->input->post('slot_id')));
-		$booking_data = array();
+		$booking_ids 		  = array();
+		$create_booking 	  = array();
 
-		foreach ($data['seats'] as $seat) 
+		foreach ($data['seats'] as $key => $seat) 
 		{
-			$save = array();
-			$save['b_slot_id']  	= $this->input->post('slot_id');
-			$save['b_movie_id'] 	= $this->input->post('movie_id');
-			$save['b_movie_title']  = $movie_detail['m_title'];
-			$save['b_slot_title'] 	= $slot_detail['s_title'];
-			$save['b_slot_date'] 	= $slot_detail['s_date'];
-			$save['b_slot_time'] 	= $slot_detail['s_time'];
-			$save['b_seat_id'] 		= $seat;
-			$save['b_booked_date']  = date('Y-m-d h:i:s');
-			$save['b_paid_amount']  = $slot_detail['s_seat_price'];
-			$save['b_status'] 		= 'in_progress';
-			$save['b_created_at']   = date('Y-m-d h:i:s');
-			$save['b_slot_seat_id'] = $this->input->post('slot_id') . '_' . $seat;
-			$booking_id = $this->Booking_model->save($save);
-			array_push($booking_data, $booking_id);
+			
+			$create_booking[$key]['b_slot_id']  	= $this->input->post('slot_id');
+			$create_booking[$key]['b_movie_id'] 	= $this->input->post('movie_id');
+			$create_booking[$key]['b_movie_title']  = $movie_detail['m_title'];
+			$create_booking[$key]['b_slot_title'] 	= $slot_detail['s_title'];
+			$create_booking[$key]['b_slot_date'] 	= $slot_detail['s_date'];
+			$create_booking[$key]['b_slot_time'] 	= $slot_detail['s_time'];
+			$create_booking[$key]['b_seat_id'] 		= $seat;
+			$create_booking[$key]['b_booked_date']  = date('Y-m-d h:i:s');
+			$create_booking[$key]['b_paid_amount']  = $slot_detail['s_seat_price'];
+			$create_booking[$key]['b_status'] 		= 'in_progress';
+			$create_booking[$key]['b_created_at']   = date('Y-m-d h:i:s');
+			$create_booking[$key]['b_slot_seat_id'] = $this->input->post('slot_id') . '_' . $seat;
+			
 		}
-
-		$data['booking_ids']  = $booking_data;
+		$booking_id = $this->Booking_model->save($create_booking);
+		$first_id = $booking_id;
+		$last_id = $first_id + (count($create_booking)-1);
+		for($i = $first_id; $i <= $last_id; $i++)
+		{
+			array_push($booking_ids, $i);
+		}
+		
+		$data['booking_ids']  = $booking_ids;
 		$data['title']        = 'Book seats';
 		$data['slot']         = $this->Slot_model->slot(array('id' => $this->input->post('slot_id')));
 
@@ -97,12 +110,12 @@ class Movie extends CI_Controller
 
 	public function check_bookings()
 	{
-		$seat_id = $this->input->post('seat');
+		$seat_ids = $this->input->post('seat');
 		$slot_id = $this->input->post('slot_id');
 		$status  = true;
 		$message  = 'Booking currently not available for ';
 
-		foreach ($seat_id as $id) 
+		foreach ($seat_ids as $id) 
 		{
 			$booking_result = $this->Booking_model->check_bookings(array('seat_id' => $id, 'slot_id' => $slot_id));
 			if (count($booking_result) > 0) 
@@ -141,23 +154,23 @@ class Movie extends CI_Controller
 
 		if ($status == 'complete') 
 		{
-			foreach ($booking_ids as $id) 
+			$update_data = array();
+			foreach ($booking_ids as $key => $id) 
 			{
-				$update = array();
-				$update['id'] = $id;
-				$update['b_status'] = 'sold';
-				$this->Booking_model->save($update);
+				$update_data[$key]['id'] = $id;
+				$update_data[$key]['b_status'] = 'sold';
 			}
+			$this->Booking_model->update($update_data);
 			$this->session->set_flashdata('success', 'Booking completed successfully !');
 		} 
 		else 
 		{
+			$delete_ids   = array();
 			foreach ($booking_ids as $id) 
 			{
-				$param       = array();
-				$param['id'] = $id;
-				$response = $this->Booking_model->delete($param);
+				array_push($delete_ids, $id);	
 			}
+			$response = $this->Booking_model->delete($delete_ids);
 			$this->session->set_flashdata('error', 'Booking cancelled successfully !');
 		}
 
