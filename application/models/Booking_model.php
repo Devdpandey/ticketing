@@ -21,6 +21,14 @@ class Booking_model extends CI_Model
         return $query->result_array();
     }
 
+    public function get_bookings_by_slot_id($slot_id)
+    {
+        $this->db->where("b_slot_id",$slot_id);
+        $query = $this->db->get("bookings");
+
+        return $query->result_array();
+    }
+
     public function save($data = array())
     {
         $this->db->insert_batch('bookings', $data);

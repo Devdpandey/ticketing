@@ -15,7 +15,8 @@
 			<div class="countdownmsg" style="color:red"></div>
 			<div class="countdown" style="color:red"></div>
 			<a data-status="complete" class="btn btn-success process_btn">Confirm</a>
-			<a data-status="cancel" class="btn btn-danger process_btn">Cancel</a>
+			<a data-status="cancel" class="btn btn-danger process_btn">Cancel</a><br><br>
+			<a data-status="reserve" class="btn btn-success process_btn">Reserve</a>
 		</div>
 		<form method="POST" id="payment_form" action="<?php echo site_url('complete-bookings') ?>">
 			<?php foreach ($booking_ids as $booking_id) : ?>

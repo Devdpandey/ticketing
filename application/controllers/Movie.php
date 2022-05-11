@@ -120,6 +120,8 @@ class Movie extends CI_Controller
 			array_push($slot_seat_ids, $slot_id.'_'.$id);
 		}
 		$booking_result = $this->Booking_model->check_bookings($slot_seat_ids);
+		$this->check_reserved_bookings($slot_id);
+
 		if(count($booking_result) > 0)
 		{
 			$bookings_to_delete = array();
@@ -133,7 +135,7 @@ class Movie extends CI_Controller
 				if ($interval > 60 && $result['b_status'] == 'in_progress') 
 				{
 					array_push($bookings_to_delete, $result['id']);
-				} 
+				}
 				else 
 				{
 					$status = false;
@@ -157,6 +159,32 @@ class Movie extends CI_Controller
 			)));
 	}
 
+	public function check_reserved_bookings($slot_id)
+	{
+		$all_booking_result = $this->Booking_model->get_bookings_by_slot_id($slot_id);
+		$bookings_to_delete = array();
+
+		foreach($all_booking_result as $result)
+		{
+
+			if($result['b_status'] == 'reserved')
+			{
+				$valid_reserved_time = strtotime(date($result['b_booked_date'], strtotime('+1 hours')));
+				$now = strtotime(date('y-m-d h:i:s'));
+				$interval = $now - $valid_reserved_time;
+
+				if($interval > 3600)
+				{
+					array_push($bookings_to_delete, $result['id']);
+				}
+			}
+		}
+		if(count($bookings_to_delete) > 0)
+		{
+			$this->Booking_model->delete($bookings_to_delete);
+		}
+	}
+
 	public function complete_bookings()
 	{
 		$status = $this->input->post('status');
@@ -173,7 +201,21 @@ class Movie extends CI_Controller
 			$this->Booking_model->update($update_data);
 			$this->session->set_flashdata('success', 'Booking completed successfully !');
 		} 
-		else 
+		else if($status=='reserve')
+		{
+			$update_data = array();
+			foreach ($booking_ids as $key => $id) 
+			{
+				$update_data[$key]['id'] = $id;
+				$update_data[$key]['b_status'] = 'reserved';
+				$update_data[$key]['b_booked_date'] = date('y-m-d h:i:s');
+
+			}
+
+			$this->Booking_model->update($update_data);
+			$this->session->set_flashdata('success', 'Booking reserved successfully !');
+		}
+		else
 		{
 			$delete_ids   = array();
 			foreach ($booking_ids as $id) 
